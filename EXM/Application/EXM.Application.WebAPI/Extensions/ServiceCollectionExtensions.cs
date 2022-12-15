@@ -1,6 +1,7 @@
 ﻿using EXM.Application.WebAPI.Configurations;
 using EXM.Common.Constants.Permission;
 using EXM.Common.Entities.Identity;
+using EXM.Common.Interfaces.Repositories;
 using EXM.Common.Interfaces.Serialization.Options;
 using EXM.Common.Interfaces.Serialization.Serializers;
 using EXM.Common.Interfaces.Serialization.Settings;
@@ -10,12 +11,16 @@ using EXM.Common.Serialization.Serialization.Options;
 using EXM.Common.Serialization.Serializers;
 using EXM.Common.Serialization.Settings;
 using EXM.Common.Wrapper;
+using EXM.Data;
 using EXM.Data.Contexts;
+using EXM.Data.Repositories;
 using EXM.Services;
 using EXM.Services.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
@@ -276,6 +281,22 @@ namespace EXM.Application.WebAPI.Extensions
                 }
             });
             return services;
+        }
+
+        internal static void AddApplicationLayer(this IServiceCollection services)
+        {
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        }
+
+        internal static IServiceCollection AddRepositories(this IServiceCollection services)
+        {
+            return services
+                .AddTransient(typeof(IRepositoryAsync<,>), typeof(RepositoryAsync<,>))
+                //.AddTransient<IIncomeRepository, IncomeRepository>()
+                //.AddTransient<IIncomeCategoryRepository, IncomeCategoryRepository>()
+                //.AddTransient<IExpenseRepository, ExpenseRepository>()
+                //.AddTransient<IExpenseCategoryRepository, ExpenseCategoryRepository>()
+                .AddTransient(typeof(IUnitOfWork<>), typeof(UnitOfWork<>));
         }
     }
 }

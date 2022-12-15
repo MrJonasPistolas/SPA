@@ -1,4 +1,7 @@
-﻿namespace EXM.Application.WebAPI
+﻿using EXM.Application.WebAPI.Extensions;
+using Microsoft.Extensions.Configuration;
+
+namespace EXM.Application.WebAPI
 {
     /// <summary>
     /// Represents the startup process for the application
@@ -17,7 +20,7 @@
         /// <param name="configuration">The current configuration.</param>
         public Startup(IConfiguration configuration)
         {
-            Configuration= configuration;
+            Configuration = configuration;
         }
 
         /// <summary>
@@ -27,11 +30,27 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            #region > DbContexts <
-
-            #endregion
-
-            services.AddMvc();
+            services.AddCurrentUserService();
+            services.AddSerialization();
+            services.AddDatabase(Configuration);
+            services.AddIdentity();
+            services.AddJwtAuthentication(services.GetApplicationSettings(Configuration));
+            services.AddApplicationLayer();
+            services.AddApplicationServices();
+            services.AddRepositories();
+            services.AddExtendedAttributesUnitOfWork();
+            services.AddSharedInfrastructure(Configuration);
+            services.RegisterSwagger();
+            services.AddInfrastructureMappings();
+            services.AddControllers();
+            services.AddRazorPages();
+            services.AddApiVersioning(config =>
+            {
+                config.DefaultApiVersion = new ApiVersion(1, 0);
+                config.AssumeDefaultVersionWhenUnspecified = true;
+                config.ReportApiVersions = true;
+            });
+            services.AddLazyCache();
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
