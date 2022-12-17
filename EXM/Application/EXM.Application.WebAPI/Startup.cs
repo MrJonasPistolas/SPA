@@ -1,5 +1,13 @@
 ﻿using EXM.Application.WebAPI.Extensions;
+using EXM.Application.WebAPI.Managers.Preferences;
+using EXM.Application.WebAPI.Middlewares;
+using EXM.Base.Extensions;
+using EXM.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 
 namespace EXM.Application.WebAPI
 {
@@ -30,15 +38,22 @@ namespace EXM.Application.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddSignalR();
+            services.AddLocalization(options =>
+            {
+                options.ResourcesPath = "Resources";
+            });
             services.AddCurrentUserService();
             services.AddSerialization();
             services.AddDatabase(Configuration);
+            services.AddServerStorage(); //TODO - should implement ServerStorageProvider to work correctly!
+            services.AddScoped<ServerPreferenceManager>();
+            services.AddServerLocalization();
             services.AddIdentity();
             services.AddJwtAuthentication(services.GetApplicationSettings(Configuration));
             services.AddApplicationLayer();
             services.AddApplicationServices();
             services.AddRepositories();
-            services.AddExtendedAttributesUnitOfWork();
             services.AddSharedInfrastructure(Configuration);
             services.RegisterSwagger();
             services.AddInfrastructureMappings();
@@ -61,26 +76,36 @@ namespace EXM.Application.WebAPI
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
+            app.UseCors();
+            app.UseExceptionHandling(env);
             app.UseHttpsRedirection();
+            app.UseMiddleware<ErrorHandlerMiddleware>();
             app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-
-            app.UseMvc(routes =>
+            app.UseStaticFiles(new StaticFileOptions
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Files")),
+                RequestPath = new PathString("/Files")
+            });
+            app.UseSpaStaticFiles();
+            app.UseRequestLocalizationByCulture();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseEndpoints();
+            app.ConfigureSwagger();
+            app.Initialize(Configuration);
+
+            app.UseSpa(spa =>
+            {
+                // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                // see https://go.microsoft.com/fwlink/?linkid=864501
+
+                spa.Options.SourcePath = "../EXM.Application";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseAngularCliServer(npmScript: "start");
+                }
             });
         }
     }

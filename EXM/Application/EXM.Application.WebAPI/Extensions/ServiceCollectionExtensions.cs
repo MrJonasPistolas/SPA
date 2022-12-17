@@ -1,24 +1,30 @@
-﻿using EXM.Application.WebAPI.Configurations;
+﻿using EXM.Application.WebAPI.Localization;
+using EXM.Application.WebAPI.Managers.Preferences;
+using EXM.Application.WebAPI.Permission;
+using EXM.Application.WebAPI.Services;
+using EXM.Application.WebAPI.Settings;
+using EXM.Base.Configurations;
+using EXM.Base.Interfaces.Serialization.Options;
+using EXM.Base.Interfaces.Serialization.Serializers;
+using EXM.Base.Interfaces.Serialization.Settings;
+using EXM.Base.Interfaces.Services;
+using EXM.Base.Interfaces.Services.Account;
+using EXM.Base.Interfaces.Services.Identity;
+using EXM.Base.Serialization.JsonConverters;
+using EXM.Base.Serialization.Options;
+using EXM.Base.Serialization.Serializers;
+using EXM.Base.Serialization.Settings;
+using EXM.Common.Constants.Localization;
 using EXM.Common.Constants.Permission;
-using EXM.Common.Entities.Identity;
-using EXM.Common.Interfaces.Repositories;
-using EXM.Common.Interfaces.Serialization.Options;
-using EXM.Common.Interfaces.Serialization.Serializers;
-using EXM.Common.Interfaces.Serialization.Settings;
-using EXM.Common.Permission;
-using EXM.Common.Serialization.JsonConverters;
-using EXM.Common.Serialization.Serialization.Options;
-using EXM.Common.Serialization.Serializers;
-using EXM.Common.Serialization.Settings;
 using EXM.Common.Wrapper;
-using EXM.Data;
-using EXM.Data.Contexts;
-using EXM.Data.Repositories;
-using EXM.Services;
-using EXM.Services.Contracts;
+using EXM.Infrastructure;
+using EXM.Infrastructure.Contexts;
+using EXM.Infrastructure.Models.Identity;
+using EXM.Infrastructure.Services;
+using EXM.Infrastructure.Services.Identity;
+using EXM.Infrastructure.Shared.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -31,7 +37,6 @@ using System.Net;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Json;
 
 namespace EXM.Application.WebAPI.Extensions
 {
@@ -40,30 +45,36 @@ namespace EXM.Application.WebAPI.Extensions
         internal static async Task<IStringLocalizer> GetRegisteredServerLocalizerAsync<T>(this IServiceCollection services) where T : class
         {
             var serviceProvider = services.BuildServiceProvider();
-            //await SetCultureFromServerPreferenceAsync(serviceProvider);
+            await SetCultureFromServerPreferenceAsync(serviceProvider);
             var localizer = serviceProvider.GetService<IStringLocalizer<T>>();
             await serviceProvider.DisposeAsync();
             return localizer;
         }
 
-        //private static async Task SetCultureFromServerPreferenceAsync(IServiceProvider serviceProvider)
-        //{
-        //    var storageService = serviceProvider.GetService<ServerPreferenceManager>();
-        //    if (storageService != null)
-        //    {
-        //        // TODO - should implement ServerStorageProvider to work correctly!
-        //        CultureInfo culture;
-        //        var preference = await storageService.GetPreference() as ServerPreference;
-        //        if (preference != null)
-        //            culture = new CultureInfo(preference.LanguageCode);
-        //        else
-        //            culture = new CultureInfo(LocalizationConstants.SupportedLanguages.FirstOrDefault()?.Code ?? "en-US");
-        //        CultureInfo.DefaultThreadCurrentCulture = culture;
-        //        CultureInfo.DefaultThreadCurrentUICulture = culture;
-        //        CultureInfo.CurrentCulture = culture;
-        //        CultureInfo.CurrentUICulture = culture;
-        //    }
-        //}
+        private static async Task SetCultureFromServerPreferenceAsync(IServiceProvider serviceProvider)
+        {
+            var storageService = serviceProvider.GetService<ServerPreferenceManager>();
+            if (storageService != null)
+            {
+                // TODO - should implement ServerStorageProvider to work correctly!
+                CultureInfo culture;
+                var preference = await storageService.GetPreference() as ServerPreference;
+                if (preference != null)
+                    culture = new CultureInfo(preference.LanguageCode);
+                else
+                    culture = new CultureInfo(LocalizationConstants.SupportedLanguages.FirstOrDefault()?.Code ?? "en-US");
+                CultureInfo.DefaultThreadCurrentCulture = culture;
+                CultureInfo.DefaultThreadCurrentUICulture = culture;
+                CultureInfo.CurrentCulture = culture;
+                CultureInfo.CurrentUICulture = culture;
+            }
+        }
+
+        internal static IServiceCollection AddServerLocalization(this IServiceCollection services)
+        {
+            services.TryAddTransient(typeof(IStringLocalizer<>), typeof(ServerLocalizer<>));
+            return services;
+        }
 
         internal static AppConfiguration GetApplicationSettings(
            this IServiceCollection services,
@@ -78,6 +89,10 @@ namespace EXM.Application.WebAPI.Extensions
         {
             services.AddSwaggerGen(async c =>
             {
+                //TODO - Lowercase Swagger Documents
+                //c.DocumentFilter<LowercaseDocumentFilter>();
+                //Refer - https://gist.github.com/rafalkasa/01d5e3b265e5aa075678e0adfd54e23f
+
                 // include all project's xml comments
                 var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -104,6 +119,8 @@ namespace EXM.Application.WebAPI.Extensions
                     }
                 });
 
+                var localizer = await GetRegisteredServerLocalizerAsync<ServerCommonResources>(services);
+
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -111,7 +128,7 @@ namespace EXM.Application.WebAPI.Extensions
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
-                    Description = "Input your Bearer token in this format - Bearer {your token here} to access this API",
+                    Description = localizer["Input your Bearer token in this format - Bearer {your token here} to access this API"],
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
@@ -184,27 +201,29 @@ namespace EXM.Application.WebAPI.Extensions
 
         internal static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            //services.AddTransient<IDateTimeService, SystemDateTimeService>();
-            //services.Configure<MailConfiguration>(configuration.GetSection("MailConfiguration"));
-            //services.AddTransient<IMailService, SMTPMailService>();
+            services.AddTransient<IDateTimeService, SystemDateTimeService>();
+            services.Configure<MailConfiguration>(configuration.GetSection("MailConfiguration"));
+            services.AddTransient<IMailService, SMTPMailService>();
             return services;
         }
 
         internal static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            //services.AddTransient<IRoleClaimService, RoleClaimService>();
-            //services.AddTransient<ITokenService, IdentityService>();
-            //services.AddTransient<IRoleService, RoleService>();
-            //services.AddTransient<IAccountService, AccountService>();
-            //services.AddTransient<IUserService, UserService>();
-            //services.AddTransient<IUploadService, UploadService>();
-            //services.AddTransient<IAuditService, AuditService>();
-            //services.AddScoped<IExcelService, ExcelService>();
+            services.AddTransient<IRoleClaimService, RoleClaimService>();
+            services.AddTransient<ITokenService, IdentityService>();
+            services.AddTransient<IRoleService, RoleService>();
+            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IUploadService, UploadService>();
+            services.AddTransient<IAuditService, AuditService>();
+            services.AddScoped<IExcelService, ExcelService>();
             return services;
         }
 
-        internal static IServiceCollection AddJwtAuthentication(this IServiceCollection services, AppConfiguration config)
+        internal static IServiceCollection AddJwtAuthentication(
+            this IServiceCollection services, AppConfiguration config)
         {
+            var key = Encoding.ASCII.GetBytes(config.Secret);
             services
                 .AddAuthentication(authentication =>
                 {
@@ -217,15 +236,15 @@ namespace EXM.Application.WebAPI.Extensions
                     bearer.SaveToken = true;
                     bearer.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = true,
-                        ValidIssuer = config.Issuer,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(config.Secret)),
-                        ValidAudience = config.Audience,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.FromMinutes(1)
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        RoleClaimType = ClaimTypes.Role,
+                        ClockSkew = TimeSpan.Zero
                     };
+
+                    var localizer = await GetRegisteredServerLocalizerAsync<ServerCommonResources>(services);
 
                     bearer.Events = new JwtBearerEvents
                     {
@@ -235,14 +254,14 @@ namespace EXM.Application.WebAPI.Extensions
                             {
                                 c.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                                 c.Response.ContentType = "application/json";
-                                var result = JsonConvert.SerializeObject(Result.Fail("The Token is expired."));
+                                var result = JsonConvert.SerializeObject(Result.Fail(localizer["The Token is expired."]));
                                 return c.Response.WriteAsync(result);
                             }
                             else
                             {
                                 c.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                                 c.Response.ContentType = "application/json";
-                                var result = JsonConvert.SerializeObject(Result.Fail("An unhandled error has occurred."));
+                                var result = JsonConvert.SerializeObject(Result.Fail(localizer["An unhandled error has occurred."]));
                                 return c.Response.WriteAsync(result);
                             }
                         },
@@ -253,7 +272,7 @@ namespace EXM.Application.WebAPI.Extensions
                             {
                                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                                 context.Response.ContentType = "application/json";
-                                var result = JsonConvert.SerializeObject(Result.Fail("You are not Authorized."));
+                                var result = JsonConvert.SerializeObject(Result.Fail(localizer["You are not Authorized."]));
                                 return context.Response.WriteAsync(result);
                             }
 
@@ -263,14 +282,14 @@ namespace EXM.Application.WebAPI.Extensions
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                             context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(Result.Fail("You are not authorized to access this resource."));
+                            var result = JsonConvert.SerializeObject(Result.Fail(localizer["You are not authorized to access this resource."]));
                             return context.Response.WriteAsync(result);
-                        }
+                        },
                     };
                 });
-
             services.AddAuthorization(options =>
             {
+                // Here I stored necessary permissions/roles in a constant
                 foreach (var prop in typeof(Permissions).GetNestedTypes().SelectMany(c => c.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)))
                 {
                     var propertyValue = prop.GetValue(null);
@@ -281,22 +300,6 @@ namespace EXM.Application.WebAPI.Extensions
                 }
             });
             return services;
-        }
-
-        internal static void AddApplicationLayer(this IServiceCollection services)
-        {
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-        }
-
-        internal static IServiceCollection AddRepositories(this IServiceCollection services)
-        {
-            return services
-                .AddTransient(typeof(IRepositoryAsync<,>), typeof(RepositoryAsync<,>))
-                //.AddTransient<IIncomeRepository, IncomeRepository>()
-                //.AddTransient<IIncomeCategoryRepository, IncomeCategoryRepository>()
-                //.AddTransient<IExpenseRepository, ExpenseRepository>()
-                //.AddTransient<IExpenseCategoryRepository, ExpenseCategoryRepository>()
-                .AddTransient(typeof(IUnitOfWork<>), typeof(UnitOfWork<>));
         }
     }
 }
