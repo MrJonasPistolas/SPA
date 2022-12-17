@@ -5,25 +5,23 @@ VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{3CB54DB8-E43F-4BFB-AD41-B64A46C1E9B9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Application.WebAPI", "Application\EXM.Application.WebAPI\EXM.Application.WebAPI.csproj", "{05451270-20E7-4E6E-A209-5222286FE6DD}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{8619224B-B5DA-4695-B10C-D0309AE2475D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Infrastructure", "Infrastructure\EXM.Infrastructure\EXM.Infrastructure.csproj", "{841E42C8-4FB5-49F0-BD71-95748D8C08EB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{EE43C005-D8D2-4383-8422-F63A352679C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXM.Domain", "Domain\EXM.Domain\EXM.Domain.csproj", "{27F15BFE-B805-41C6-B6B1-69089B26FCE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Domain", "Domain\EXM.Domain\EXM.Domain.csproj", "{27F15BFE-B805-41C6-B6B1-69089B26FCE0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{9759CA74-BC65-493E-BE14-3E528189584B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXM.Base", "Base\EXM.Base\EXM.Base.csproj", "{F1483EDD-6BEF-44B5-8B7A-1AD6E85DC5B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Base", "Base\EXM.Base\EXM.Base.csproj", "{F1483EDD-6BEF-44B5-8B7A-1AD6E85DC5B7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{7109E566-F475-4B05-8E3F-8756F9B6198A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXM.Common", "Common\EXM.Common\EXM.Common.csproj", "{86DBCABF-FCE4-4437-8968-B5318344E164}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Common", "Common\EXM.Common\EXM.Common.csproj", "{86DBCABF-FCE4-4437-8968-B5318344E164}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXM.Infrastructure.Shared", "Infrastructure\EXM.Infrastructure.Shared\EXM.Infrastructure.Shared.csproj", "{B7E2443C-350B-4A7A-A2F4-481EB003C574}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Infrastructure.Shared", "Infrastructure\EXM.Infrastructure.Shared\EXM.Infrastructure.Shared.csproj", "{B7E2443C-350B-4A7A-A2F4-481EB003C574}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +29,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{05451270-20E7-4E6E-A209-5222286FE6DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05451270-20E7-4E6E-A209-5222286FE6DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05451270-20E7-4E6E-A209-5222286FE6DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05451270-20E7-4E6E-A209-5222286FE6DD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{841E42C8-4FB5-49F0-BD71-95748D8C08EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{841E42C8-4FB5-49F0-BD71-95748D8C08EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{841E42C8-4FB5-49F0-BD71-95748D8C08EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -60,7 +54,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{05451270-20E7-4E6E-A209-5222286FE6DD} = {3CB54DB8-E43F-4BFB-AD41-B64A46C1E9B9}
 		{841E42C8-4FB5-49F0-BD71-95748D8C08EB} = {8619224B-B5DA-4695-B10C-D0309AE2475D}
 		{27F15BFE-B805-41C6-B6B1-69089B26FCE0} = {EE43C005-D8D2-4383-8422-F63A352679C8}
 		{F1483EDD-6BEF-44B5-8B7A-1AD6E85DC5B7} = {9759CA74-BC65-493E-BE14-3E528189584B}
