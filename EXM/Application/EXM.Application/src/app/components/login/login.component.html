@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-layout-mode="detached" data-topbar-color="dark" data-sidenav-color="light" data-sidenav-user="true">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Log In | Hyper - Responsive Bootstrap 5 Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+
+<body class="authentication-bg">
+  <div class="account-pages pt-2 pt-sm-5 pb-4 pb-sm-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xxl-4 col-lg-5">
+          <div class="card">
+
+            <!-- Logo -->
+            <div class="card-header pt-4 pb-4 text-center bg-primary">
+              <a href="/">
+                <span><img src="assets/images/logo.png" alt="logo" height="22"></span>
+              </a>
+            </div>
+
+            <div class="card-body p-4">
+
+              <div class="text-center w-75 m-auto">
+                <h4 class="text-dark-50 text-center pb-0 fw-bold">{{ 'login.title' | translate }}</h4>
+                <p class="text-muted mb-4">{{ 'login.subtitle' | translate }}</p>
+              </div>
+
+              <form [formGroup]="LoginForm" (ngSubmit)="onSubmit()" class="needs-validation">
+
+                <div class="mb-3">
+                  <label for="login-email" class="form-label">{{ 'login.inputs.email' | translate }}</label>
+                  <input formControlName="Email" class="form-control" [ngClass]="{ 'is-invalid': Submitted && f['Email'].errors }" type="email" id="login-email" required="" placeholder="{{ 'login.inputs.email' | translate }}">
+                  <div *ngIf="Submitted && f['Email'].errors" class="invalid-feedback">
+                    <div *ngIf="f['Email'].errors['required']">{{ 'login.errors.email.required' | translate }}</div>
+                    <div *ngIf="f['Email'].errors['email']">{{ 'login.errors.email.wrong' | translate }}</div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <a href="/recover" class="text-muted float-end">
+                    <small>{{ 'login.texts.forgotPassword' | translate }}</small>
+                  </a>
+                  <label for="email-password" class="form-label">{{ 'login.inputs.password' | translate }}</label>
+                  <div class="input-group input-group-merge">
+                    <input formControlName="Password" type="password" id="email-password" class="form-control" [ngClass]="{ 'is-invalid': Submitted && f['Password'].errors }" placeholder="{{ 'login.inputs.password' | translate }}">
+                    <div class="input-group-text" data-password="false" (click)="showPassword($event, dataPassword)" #dataPassword>
+                      <span class="password-eye"></span>
+                    </div>
+                    <div *ngIf="Submitted && f['Password'].errors" class="invalid-feedback">
+                      <div *ngIf="f['Password'].errors['required']">{{ 'login.errors.password.required' | translate }}</div>
+                      <div *ngIf="f['Password'].errors['minLength']">{{ 'login.errors.password.minLength' | translate }}</div>
+                      <div *ngIf="f['Password'].errors['maxLength']">{{ 'login.errors.password.maxLength' | translate }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3 mb-3">
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="login-checkbox" checked>
+                    <label class="form-check-label" for="login-checkbox">{{ 'login.inputs.rememberMe' | translate }}</label>
+                  </div>
+                </div>
+
+                <div class="mb-3 mb-0 text-center">
+                  <button class="btn btn-primary" type="submit"> {{ 'login.texts.signin' | translate }} </button>
+                </div>
+
+              </form>
+            </div> <!-- end card-body -->
+          </div>
+          <!-- end card -->
+
+          <div class="row mt-3">
+            <div class="col-12 text-center">
+              <p class="text-muted">{{ 'login.texts.createAccount' | translate }} <a href="register" class="text-muted ms-1"><b>{{ 'login.texts.signup' | translate }}</b></a></p>
+            </div> <!-- end col -->
+          </div>
+          <!-- end row -->
+
+        </div> <!-- end col -->
+        <ngx-ui-loader [loaderId]="'loader-login'"></ngx-ui-loader>
+      </div>
+      <!-- end row -->
+    </div>
+    <!-- end container -->
+  </div>
+  <!-- end page -->
+
+  <footer class="footer footer-alt">
+    {{ CurrentYear }} © EXM
+  </footer>
+
+</body>
+</html>

@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Common", "Common\EXM.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Infrastructure.Shared", "Infrastructure\EXM.Infrastructure.Shared\EXM.Infrastructure.Shared.csproj", "{B7E2443C-350B-4A7A-A2F4-481EB003C574}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXM.Application.WebAPI", "Application\EXM.Application.WebAPI\EXM.Application.WebAPI.csproj", "{E8C9B8D6-7DEF-4338-BA58-AF649E5FC991}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{B7E2443C-350B-4A7A-A2F4-481EB003C574}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7E2443C-350B-4A7A-A2F4-481EB003C574}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7E2443C-350B-4A7A-A2F4-481EB003C574}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8C9B8D6-7DEF-4338-BA58-AF649E5FC991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8C9B8D6-7DEF-4338-BA58-AF649E5FC991}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8C9B8D6-7DEF-4338-BA58-AF649E5FC991}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8C9B8D6-7DEF-4338-BA58-AF649E5FC991}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +65,7 @@ Global
 		{F1483EDD-6BEF-44B5-8B7A-1AD6E85DC5B7} = {9759CA74-BC65-493E-BE14-3E528189584B}
 		{86DBCABF-FCE4-4437-8968-B5318344E164} = {7109E566-F475-4B05-8E3F-8756F9B6198A}
 		{B7E2443C-350B-4A7A-A2F4-481EB003C574} = {8619224B-B5DA-4695-B10C-D0309AE2475D}
+		{E8C9B8D6-7DEF-4338-BA58-AF649E5FC991} = {3CB54DB8-E43F-4BFB-AD41-B64A46C1E9B9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F9752166-9FF6-4A38-895F-CAEB8C8419FE}

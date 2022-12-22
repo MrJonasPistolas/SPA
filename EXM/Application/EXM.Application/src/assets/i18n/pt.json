@@ -1,0 +1,17 @@
+{
+	"login.errors.email.required": "Por favor insira um e-mail.",
+	"login.errors.email.wrong": "Por favor insira um e-mail válido.",
+	"login.errors.password.maxLength": "A palavra-passe não deve exceder 40 caracteres.",
+	"login.errors.password.minLength": "A palavra-passe deve ter pelo menos 6 caracteres.",
+	"login.errors.password.required": "Por favor insira uma palavra-passe.",
+	"login.inputs.email": "Endereço de e-mail",
+	"login.inputs.password": "Palavra-passe",
+	"login.inputs.rememberMe": "Lembrar-me",
+	"login.pageTitle": "EXM | Iniciar sessão",
+	"login.subtitle": "Insira o seu e-mail e a sua palavra-passe para entrar.",
+	"login.texts.createAccount": "Não tem uma conta?",
+	"login.texts.forgotPassword": "Esqueceu a sua palavra-passe?",
+	"login.texts.signin": "Iniciar sessão",
+	"login.texts.signup": "Registe-se",
+	"login.title": "Iniciar sessão"
+}

@@ -6,6 +6,7 @@ using EXM.Common.Models;
 using EXM.Common.Wrapper;
 using EXM.Infrastructure.Models.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -60,7 +61,21 @@ namespace EXM.Infrastructure.Services.Identity
             await _userManager.UpdateAsync(user);
 
             var token = await GenerateJwtAsync(user);
-            var response = new TokenResponse { Token = token, RefreshToken = user.RefreshToken, UserImageURL = user.ProfilePictureDataUrl };
+            var rolesNames = await _userManager.GetRolesAsync(user);
+
+            List<UserRoleModel> roles = new List<UserRoleModel>();
+            foreach (var roleName in rolesNames)
+            {
+                var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+                roles.Add(new UserRoleModel
+                {
+                    RoleName = role.Name,
+                    RoleDescription = role.Description,
+                    Selected = false
+                });
+            }
+
+            var response = new TokenResponse { Email = user.Email, Roles = roles, Token = token, RefreshToken = user.RefreshToken, UserImageURL = user.ProfilePictureDataUrl };
             return await Result<TokenResponse>.SuccessAsync(response);
         }
 
