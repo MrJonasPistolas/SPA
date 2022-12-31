@@ -1,17 +1,60 @@
 {
-	"login.errors.email.required": "Por favor insira um e-mail.",
-	"login.errors.email.wrong": "Por favor insira um e-mail válido.",
-	"login.errors.password.maxLength": "A palavra-passe não deve exceder 40 caracteres.",
-	"login.errors.password.minLength": "A palavra-passe deve ter pelo menos 6 caracteres.",
-	"login.errors.password.required": "Por favor insira uma palavra-passe.",
-	"login.inputs.email": "Endereço de e-mail",
-	"login.inputs.password": "Palavra-passe",
-	"login.inputs.rememberMe": "Lembrar-me",
-	"login.pageTitle": "EXM | Iniciar sessão",
-	"login.subtitle": "Insira o seu e-mail e a sua palavra-passe para entrar.",
-	"login.texts.createAccount": "Não tem uma conta?",
-	"login.texts.forgotPassword": "Esqueceu a sua palavra-passe?",
-	"login.texts.signin": "Iniciar sessão",
-	"login.texts.signup": "Registe-se",
-	"login.title": "Iniciar sessão"
+  "layout": {
+    "topnavbar": {
+      "languages": {
+        "en": "Inglês",
+        "pt": "Português"
+      },
+      "user": {
+        "welcome": "Bem-vindo!",
+        "profile": "Minha conta",
+        "settings": "Configurações",
+        "logout": "Terminar sessão"
+      }
+    },
+    "modals": {
+      "logout": {
+        "buttons": {
+          "cancel": "Cancelar",
+          "confirm": "Confirmar"
+        },
+        "title": "Terminar sessão",
+        "body": "Deseja terminar a sua sessão?"
+      }
+    }
+  },
+  "login": {
+    "errors": {
+      "email": {
+        "required": "Por favor insira um e-mail.",
+        "wrong": "Por favor insira um e-mail válido."
+      },
+      "form": {
+        "emailNotConfirmed": "E-mail não confirmado.",
+        "invalidCredentials": "Credênciais inválidas.",
+        "userNotActive": "Utilizador inativo. Por favor entre em contacto com o administrador.",
+        "userNotFound": "Utilizador não encontrado."
+      },
+      "password": {
+        "maxLength": "A palavra-passe não deve exceder 40 caracteres.",
+        "minLength": "A palavra-passe deve ter pelo menos 6 caracteres.",
+        "required": "Por favor insira uma palavra-passe."
+      },
+      "title": "Errors:"
+    },
+    "inputs": {
+      "email": "Endereço de e-mail",
+      "password": "Palavra-passe",
+      "rememberMe": "Lembrar-me"
+    },
+    "pageTitle": "EXM | Iniciar sessão",
+    "subtitle": "Insira o seu e-mail e a sua palavra-passe para entrar.",
+    "texts": {
+      "createAccount": "Não tem uma conta?",
+      "forgotPassword": "Esqueceu a sua palavra-passe?",
+      "signin": "Iniciar sessão",
+      "signup": "Registe-se"
+    },
+    "title": "Iniciar sessão"
+  }
 }

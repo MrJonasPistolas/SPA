@@ -2,7 +2,6 @@
 using EXM.Base.Interfaces.Services;
 using EXM.Common.Constants.Localization;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
 using System.Globalization;
 
 namespace EXM.Application.WebAPI.Extensions

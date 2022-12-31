@@ -4,7 +4,6 @@ using EXM.Application.WebAPI.Middlewares;
 using EXM.Base.Extensions;
 using EXM.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.FileProviders;
 
 namespace EXM.Application.WebAPI
@@ -14,6 +13,7 @@ namespace EXM.Application.WebAPI
     /// </summary>
     public class Startup
     {
+        private readonly string CORSOpenPolicy = "OpenCORSPolicy";
         /// <summary>
         /// Gets the current configuration.
         /// </summary>
@@ -35,7 +35,10 @@ namespace EXM.Application.WebAPI
         /// <param name="services">The collection of services to configure the application with.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: CORSOpenPolicy, builder => { builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod(); });
+            });
             services.AddSignalR();
             services.AddLocalization(options =>
             {
@@ -68,7 +71,7 @@ namespace EXM.Application.WebAPI
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseCors();
+            app.UseCors(CORSOpenPolicy);
             app.UseExceptionHandling(env);
             app.UseHttpsRedirection();
             app.UseMiddleware<ErrorHandlerMiddleware>();

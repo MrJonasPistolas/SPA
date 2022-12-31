@@ -3,7 +3,9 @@ import { Injectable, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import {
   BehaviorSubject,
+  catchError,
   delay,
+  finalize,
   map,
   Observable,
   of,
@@ -13,18 +15,27 @@ import {
 import { environment } from "src/environments/environment";
 
 // 3rd party libraries
-import { Result, TokenResponse } from "../models";
+import {
+  Result,
+  TokenResponse,
+  RefreshTokenRequest,
+  TokenRequest
+} from "../models";
+import { RootScope } from "../scopes";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService implements OnDestroy {
-  private readonly apiUrl = `${environment.serverUrl}/api/account`;
+  private readonly apiUrl = `${environment.serverUrl}`;
   private timer: Subscription | null = null;
   private _user = new BehaviorSubject<TokenResponse | null>(null);
   user$ = this._user.asObservable();
 
-  constructor(private router: Router, private http: HttpClient) {
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private rootScope: RootScope) {
     window.addEventListener('storage', this.storageEventListener.bind(this));
   }
 
@@ -47,23 +58,45 @@ export class AuthService implements OnDestroy {
   }
 
   login(username: string, password: string, rememberMe: boolean) {
+    const tokenRequest: TokenRequest = {
+      email: username,
+      password: password,
+      rememberMe: rememberMe
+    };
     return this.http
-      .post<Result<TokenResponse>>(`${this.apiUrl}/api/identity/token`, { username, password, rememberMe })
+      .post<Result<TokenResponse>>(`${this.apiUrl}/api/identity/token`, tokenRequest)
       .pipe(
-        map((x: Result<TokenResponse>) => {
-          this._user.next({
-            email: x.data.email,
-            refreshToken: x.data.refreshToken,
-            refreshTokenExpiryTime: x.data.refreshTokenExpiryTime,
-            roles: x.data.roles,
-            token: x.data.token,
-            userImageURL: x.data.userImageURL
-          });
-          this.setLocalStorage(x.data);
-          this.startTokenTimer();
-          return x;
-        })
+        map(
+          (x: Result<TokenResponse>) => {
+            if (x.succeeded) {
+              this._user.next({
+                name: x.data.name,
+                email: x.data.email,
+                refreshToken: x.data.refreshToken,
+                refreshTokenExpiryTime: x.data.refreshTokenExpiryTime,
+                roles: x.data.roles,
+                token: x.data.token,
+                userImageURL: x.data.userImageURL
+              });
+              this.rootScope.SetTokenUser({
+                email: x.data.email,
+                name: x.data.name,
+                roles: x.data.roles,
+                userPicture: x.data.userImageURL
+              });
+              this.setLocalStorage(x.data);
+              this.startTokenTimer();
+            }
+            return x;
+          }
+        )
       );
+  }
+
+  logout() {
+    this.clearLocalStorage();
+    this._user.next(null);
+    this.stopTokenTimer();
   }
 
   refreshToken(): Observable<Result<TokenResponse> | null> {
@@ -74,17 +107,29 @@ export class AuthService implements OnDestroy {
       return of(null);
     }
 
+    const request: RefreshTokenRequest = {
+      refreshToken: refreshToken,
+      token: token
+    };
+
     return this.http
-      .post<Result<TokenResponse>>(`${this.apiUrl}/api/identity/token`, { token, refreshToken })
+      .post<Result<TokenResponse>>(`${this.apiUrl}/api/identity/token/refresh`, request)
       .pipe(
         map((x: Result<TokenResponse>) => {
           this._user.next({
+            name: x.data.name,
             email: x.data.email,
             refreshToken: x.data.refreshToken,
             refreshTokenExpiryTime: x.data.refreshTokenExpiryTime,
             roles: x.data.roles,
             token: x.data.token,
             userImageURL: x.data.userImageURL
+          });
+          this.rootScope.SetTokenUser({
+            email: x.data.email,
+            name: x.data.name,
+            roles: x.data.roles,
+            userPicture: x.data.userImageURL
           });
           this.setLocalStorage(x.data);
           this.startTokenTimer();

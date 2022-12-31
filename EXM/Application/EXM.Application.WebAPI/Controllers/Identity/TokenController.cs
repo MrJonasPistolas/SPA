@@ -1,6 +1,7 @@
 ﻿using EXM.Base.Interfaces.Services;
 using EXM.Base.Interfaces.Services.Identity;
 using EXM.Base.Requests.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EXM.Application.WebAPI.Controllers.Identity

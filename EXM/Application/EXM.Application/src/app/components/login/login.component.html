@@ -60,10 +60,17 @@
 
                 <div class="mb-3 mb-3">
                   <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="login-checkbox" checked>
+                    <input formControlName="RememberMe" type="checkbox" class="form-check-input" id="login-checkbox" checked>
                     <label class="form-check-label" for="login-checkbox">{{ 'login.inputs.rememberMe' | translate }}</label>
                   </div>
                 </div>
+
+
+                <ul class="list-group mb-3 mb-0" *ngIf="LoginError">
+                  <li *ngFor="let error of ErrorsList" class="list-group-item list-group-item-danger">
+                    <i class="uil-comment-exclamation"></i> {{ error }}
+                  </li>
+                </ul>
 
                 <div class="mb-3 mb-0 text-center">
                   <button class="btn btn-primary" type="submit"> {{ 'login.texts.signin' | translate }} </button>

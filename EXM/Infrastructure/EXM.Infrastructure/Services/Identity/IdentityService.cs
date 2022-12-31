@@ -2,7 +2,7 @@
 using EXM.Base.Interfaces.Services.Identity;
 using EXM.Base.Requests.Identity;
 using EXM.Base.Responses.Identity;
-using EXM.Common.Models;
+
 using EXM.Common.Wrapper;
 using EXM.Infrastructure.Models.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -18,8 +18,6 @@ namespace EXM.Infrastructure.Services.Identity
 {
     public class IdentityService : ITokenService
     {
-        private const string InvalidErrorMessage = "Invalid email or password.";
-
         private readonly UserManager<EXMUser> _userManager;
         private readonly RoleManager<EXMRole> _roleManager;
         private readonly AppConfiguration _appConfig;
@@ -40,20 +38,20 @@ namespace EXM.Infrastructure.Services.Identity
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return await Result<TokenResponse>.FailAsync("User Not Found.");
+                return await Result<TokenResponse>.FailAsync("login.errors.form.userNotFound");
             }
             if (!user.IsActive)
             {
-                return await Result<TokenResponse>.FailAsync("User Not Active. Please contact the administrator.");
+                return await Result<TokenResponse>.FailAsync("login.errors.form.userNotActive");
             }
             if (!user.EmailConfirmed)
             {
-                return await Result<TokenResponse>.FailAsync("E-Mail not confirmed.");
+                return await Result<TokenResponse>.FailAsync("login.errors.form.emailNotConfirmed");
             }
             var passwordValid = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!passwordValid)
             {
-                return await Result<TokenResponse>.FailAsync("Invalid Credentials.");
+                return await Result<TokenResponse>.FailAsync("login.errors.form.invalidCredentials");
             }
 
             user.RefreshToken = GenerateRefreshToken();
@@ -71,11 +69,22 @@ namespace EXM.Infrastructure.Services.Identity
                 {
                     RoleName = role.Name,
                     RoleDescription = role.Description,
-                    Selected = false
+                    Selected = true
                 });
             }
 
-            var response = new TokenResponse { Email = user.Email, Roles = roles, Token = token, RefreshToken = user.RefreshToken, UserImageURL = user.ProfilePictureDataUrl };
+            var name = string.IsNullOrWhiteSpace(user.LastName) ? user.FirstName : $"{user.FirstName} {user.LastName}";
+
+            var response = new TokenResponse
+            {
+                Name = name,
+                Email = user.Email,
+                Roles = roles,
+                Token = token,
+                RefreshToken = user.RefreshToken,
+                RefreshTokenExpiryTime = user.RefreshTokenExpiryTime,
+                UserImageURL = user.ProfilePictureDataUrl
+            };
             return await Result<TokenResponse>.SuccessAsync(response);
         }
 
@@ -96,7 +105,32 @@ namespace EXM.Infrastructure.Services.Identity
             user.RefreshToken = GenerateRefreshToken();
             await _userManager.UpdateAsync(user);
 
-            var response = new TokenResponse { Token = token, RefreshToken = user.RefreshToken, RefreshTokenExpiryTime = user.RefreshTokenExpiryTime };
+            var rolesNames = await _userManager.GetRolesAsync(user);
+
+            List<UserRoleModel> roles = new List<UserRoleModel>();
+            foreach (var roleName in rolesNames)
+            {
+                var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+                roles.Add(new UserRoleModel
+                {
+                    RoleName = role.Name,
+                    RoleDescription = role.Description,
+                    Selected = true
+                });
+            }
+
+            var name = string.IsNullOrWhiteSpace(user.LastName) ? user.FirstName : $"{user.FirstName} {user.LastName}";
+
+            var response = new TokenResponse 
+            { 
+                Name = name, 
+                Email = user.Email, 
+                Roles = roles, 
+                Token = token, 
+                RefreshToken = user.RefreshToken, 
+                RefreshTokenExpiryTime = user.RefreshTokenExpiryTime,
+                UserImageURL = user.ProfilePictureDataUrl
+            };
             return await Result<TokenResponse>.SuccessAsync(response);
         }
 

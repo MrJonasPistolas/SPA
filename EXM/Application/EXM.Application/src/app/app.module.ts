@@ -16,14 +16,17 @@ import {
   LoginComponent
 } from './components';
 import { CoreModule } from './modules';
+import { CallbackPipe } from './pipes';
 import { RootScope } from './scopes';
+import { HelperService } from './services';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     HomeComponent,
-    AppLayoutComponent
+    AppLayoutComponent,
+    CallbackPipe
   ],
   imports: [
     BrowserModule,
@@ -37,7 +40,7 @@ import { RootScope } from './scopes';
       bgsSize: 30,
       bgsType: 'ball-spin-clockwise',
       blur: 5,
-      fgsColor: '#01a9ac',
+      fgsColor: '#727CF5',
       fgsPosition: 'center-center',
       fgsSize: 30,
       fgsType: 'rectangle-bounce',
@@ -57,7 +60,8 @@ import { RootScope } from './scopes';
     })
   ],
   providers: [
-    RootScope
+    RootScope,
+    HelperService
   ],
   bootstrap: [AppComponent]
 })

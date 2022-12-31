@@ -4,9 +4,9 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { map, Subscription } from 'rxjs';
+import { finalize, map, Subscription } from 'rxjs';
 
-import { TokenResponse } from '../../models';
+import { Result, TokenResponse } from '../../models';
 import { AuthService } from '../../services';
 
 @Component({
@@ -25,9 +25,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   public Loading: boolean = false;
   public Submitted: boolean = false;
   public ReturnUrl: string = '';
-  public LoginError: string = '';
+  public LoginError: boolean = false;
   public Subscription: Subscription | null = null;
   public CurrentYear = new Date().getUTCFullYear();
+  public Translations = new Array<any>();
+  public ErrorsList = new Array<any>();
 
   // Constructor
   constructor(
@@ -43,6 +45,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._TranslateService.get('login.pageTitle').subscribe((x: string) => {
       this._TitleService.setTitle(x);
+      var languageCode = this._TranslateService.getDefaultLang();
+      this.Translations = this._TranslateService.translations[languageCode];
     });
 
     this.Subscription = this._AuthService.user$.subscribe((x: TokenResponse | null) => {
@@ -93,7 +97,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.LoginError = '';
+    this.LoginError = false;
     this.Submitted = true;
 
     if (this.LoginForm.invalid) {
@@ -101,6 +105,34 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     this._Loader.startLoader('loader-login');
+
+    const returnUrl = this._ActivatedRoute.snapshot.queryParams['returnUrl'] || '';
+    this._AuthService
+      .login(this.f['Email'].value, this.f['Password'].value, this.f['RememberMe'].value)
+      .pipe(
+        finalize(() => {
+          this._Loader.stopLoader('loader-login');
+          this.Submitted = false;
+        })
+      )
+      .subscribe(
+        (r: Result<TokenResponse>) => {
+          if (r.succeeded) {
+            this._Router.navigate([returnUrl]);
+          } else {
+            this.ErrorsList = new Array<string>();
+
+            r.messages.forEach((value: string) => {
+              this.ErrorsList.push(this.Translations[<any>value]);
+            });
+
+            this.LoginError = true;
+          }
+        },
+        (error: any) => {
+          this.LoginError = error;
+        }
+      );
   }
 
   ngOnDestroy(): void {
