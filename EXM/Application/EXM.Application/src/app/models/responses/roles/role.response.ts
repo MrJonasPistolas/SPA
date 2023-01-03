@@ -1,5 +1,7 @@
+import { Role } from "../../../enums";
+
 export interface RoleResponse {
-  roleName: string;
+  roleName: Role;
   roleDescription: string;
   selected: boolean;
 }

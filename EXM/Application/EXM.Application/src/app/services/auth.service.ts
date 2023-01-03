@@ -3,9 +3,7 @@ import { Injectable, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import {
   BehaviorSubject,
-  catchError,
   delay,
-  finalize,
   map,
   Observable,
   of,

@@ -2,6 +2,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -15,10 +16,11 @@ import {
   HomeComponent,
   LoginComponent
 } from './components';
+import { RoleGuard } from './guards';
 import { CoreModule } from './modules';
 import { CallbackPipe } from './pipes';
 import { RootScope } from './scopes';
-import { HelperService } from './services';
+import { HelperService, IncomeCategoriesService } from './services';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,7 @@ import { HelperService } from './services';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     ReactiveFormsModule,
     AppRoutingModule,
@@ -61,7 +64,9 @@ import { HelperService } from './services';
   ],
   providers: [
     RootScope,
-    HelperService
+    HelperService,
+    IncomeCategoriesService,
+    RoleGuard
   ],
   bootstrap: [AppComponent]
 })

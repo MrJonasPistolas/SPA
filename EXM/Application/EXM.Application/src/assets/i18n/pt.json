@@ -1,11 +1,24 @@
 {
   "layout": {
+    "sidemenu": {
+      "navigation": "Navegação",
+      "administration": {
+        "title": "Administração",
+        "categories": {
+          "title": "Categorias",
+          "incomes": "Rendimentos",
+          "expenses": "Despesas"
+        }
+      }
+    },
     "topnavbar": {
       "languages": {
         "en": "Inglês",
         "pt": "Português"
       },
       "user": {
+        "administrator": "Administrador",
+        "basic": "Básico",
         "welcome": "Bem-vindo!",
         "profile": "Minha conta",
         "settings": "Configurações",

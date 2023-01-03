@@ -3,6 +3,7 @@ import {
   OnInit
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 import { EXMConfig } from '../../config';
@@ -31,6 +32,7 @@ export class AppLayoutComponent implements OnInit {
   public availableLanguages: Array<LanguageViewer> = new Array<LanguageViewer>();
   public user: TokenUserResponse | null = null;
   public userRoles: Array<RoleResponse> | undefined;
+  public roleName: string = '';
   public modal: any;
 
   constructor(
@@ -56,6 +58,8 @@ export class AppLayoutComponent implements OnInit {
     this.user = this.rootScope.GetTokenUser();
     this.userRoles = this.user?.roles;
 
+    this.getRoleName();
+
     new EXMConfig().Init();
     new ThemeCustomizer().init();
 
@@ -66,6 +70,13 @@ export class AppLayoutComponent implements OnInit {
         backdrop: 'static'
       }
     );
+  }
+
+  public getRoleName() {
+    const role: string = this.userRoles && this.userRoles[0] && this.userRoles[0].roleName.toString() || '';
+    this.translateService.get(`layout.topnavbar.user.${role.toLowerCase()}`).subscribe((value: string) => {
+      this.roleName = value;
+    });
   }
 
   public showLogout() {

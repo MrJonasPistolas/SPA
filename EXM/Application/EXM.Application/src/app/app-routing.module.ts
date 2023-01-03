@@ -4,9 +4,11 @@ import { RouterModule, Routes } from '@angular/router';
 import {
   AppLayoutComponent,
   HomeComponent,
+  IncomeCategoriesComponent,
   LoginComponent
 } from './components';
-import { AfterLoginGuard } from './guards';
+import { Role } from './enums';
+import { AfterLoginGuard, RoleGuard } from './guards';
 
 const routes: Routes = [
   // Basic Routes
@@ -14,7 +16,16 @@ const routes: Routes = [
     path: '',
     component: AppLayoutComponent,
     children: [
-      { path: '', component: HomeComponent },
+      {
+        path: '',
+        component: HomeComponent
+      },
+      {
+        path: 'admin/category/incomes',
+        component: IncomeCategoriesComponent,
+        canActivate: [RoleGuard],
+        data: { roles: [Role.Administrator] }
+      },
     ],
     canActivate: [AfterLoginGuard]
   },

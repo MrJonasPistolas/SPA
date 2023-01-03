@@ -1,9 +1,12 @@
 import { Injectable } from "@angular/core";
 
+import { Role } from "../enums";
+
 import {
   LanguageViewer,
   RoleResponse
 } from "../models";
+import { RootScope } from "../scopes";
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +14,7 @@ import {
 export class HelperService {
 
   // Constructor
-  constructor() { }
+  constructor(private rootScope: RootScope) { }
 
   public FilterSelectedLanguage(language: LanguageViewer) {
     return language.selected;
@@ -23,5 +26,10 @@ export class HelperService {
 
   public FilterSelectedRole(role: RoleResponse) {
     return role.selected;
+  }
+
+  public IsAdmin(): boolean {
+    const user = this.rootScope.GetTokenUser();
+    return user?.roles[0].roleName === Role.Administrator;
   }
 }
