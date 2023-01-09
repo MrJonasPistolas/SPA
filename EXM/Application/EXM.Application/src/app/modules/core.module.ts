@@ -1,8 +1,7 @@
 import { NgModule, APP_INITIALIZER, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-
-import { AgGridModule } from 'ag-grid-angular';
+import { BrowserModule } from '@angular/platform-browser';
 
 import { AppInitializer } from '../initializer';
 
@@ -14,7 +13,7 @@ import {
 
 @NgModule({
   declarations: [],
-  imports: [CommonModule, AgGridModule],
+  imports: [CommonModule, BrowserModule],
   providers: [
     {
       provide: APP_INITIALIZER,

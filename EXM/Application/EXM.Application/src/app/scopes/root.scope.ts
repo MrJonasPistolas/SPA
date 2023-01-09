@@ -4,6 +4,7 @@ export class RootScope {
   // Properties
   private _Language: string | undefined;
   private _TokenUser: TokenUserResponse | null = null;
+  private _Translations = {};
 
   // Methods
   GetLanguage(): string {
@@ -20,5 +21,13 @@ export class RootScope {
 
   SetTokenUser(tokenUser: TokenUserResponse): void {
     this._TokenUser = tokenUser;
+  }
+
+  GetTranslations(): any {
+    return this._Translations;
+  }
+
+  SetTranslations(translations: any): void {
+    this._Translations = translations;
   }
 }

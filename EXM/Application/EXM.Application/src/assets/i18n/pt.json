@@ -69,5 +69,25 @@
       "signup": "Registe-se"
     },
     "title": "Iniciar sessão"
+  },
+  "incomeCategories": {
+    "table": {
+      "fields": {
+        "id": "Identificador",
+        "name": "Nome"
+      },
+      "buttons": {
+        "add": "Adicionar",
+        "edit": "Editar",
+        "delete": "Eliminar"
+      }
+    },
+    "breadcrumb": {
+      "home": "Início",
+      "admin": "Administração",
+      "incomeCategories": "Categorieas - Rendimentos"
+    },
+    "pageTitle": "EXM | Categorias - Rendimentos",
+    "title": "Categorias - Rendimentos"
   }
 }

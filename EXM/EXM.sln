@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Common", "Common\EXM.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Infrastructure.Shared", "Infrastructure\EXM.Infrastructure.Shared\EXM.Infrastructure.Shared.csproj", "{B7E2443C-350B-4A7A-A2F4-481EB003C574}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXM.Application.WebAPI", "Application\EXM.Application.WebAPI\EXM.Application.WebAPI.csproj", "{E8C9B8D6-7DEF-4338-BA58-AF649E5FC991}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXM.Application.WebAPI", "Application\EXM.Application.WebAPI\EXM.Application.WebAPI.csproj", "{E8C9B8D6-7DEF-4338-BA58-AF649E5FC991}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

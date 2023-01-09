@@ -1,12 +1,31 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  Component,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { finalize, map, Subscription } from 'rxjs';
+import {
+  ActivatedRoute,
+  Router
+} from '@angular/router';
+import {
+  finalize,
+  Subscription
+} from 'rxjs';
 
-import { Result, TokenResponse } from '../../models';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
+
+import {
+  Result,
+  TokenResponse
+} from '../../models';
+import { RootScope } from '../../scopes';
 import { AuthService } from '../../services';
 
 @Component({
@@ -28,39 +47,36 @@ export class LoginComponent implements OnInit, OnDestroy {
   public LoginError: boolean = false;
   public Subscription: Subscription | null = null;
   public CurrentYear = new Date().getUTCFullYear();
-  public Translations = new Array<any>();
+  public Translations: any = {};
   public ErrorsList = new Array<any>();
 
   // Constructor
   constructor(
-    private _FormBuilder: FormBuilder,
-    private _ActivatedRoute: ActivatedRoute,
-    private _Router: Router,
-    private _AuthService: AuthService,
-    private _TitleService: Title,
-    private _TranslateService: TranslateService,
-    private _Loader: NgxUiLoaderService
+    private formBuilder: FormBuilder,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private authService: AuthService,
+    private titleService: Title,
+    private rootScope: RootScope,
+    private loader: NgxUiLoaderService
   ) { }
 
   ngOnInit(): void {
-    this._TranslateService.get('login.pageTitle').subscribe((x: string) => {
-      this._TitleService.setTitle(x);
-      var languageCode = this._TranslateService.getDefaultLang();
-      this.Translations = this._TranslateService.translations[languageCode];
-    });
+    this.Translations = this.rootScope.GetTranslations();
+    this.titleService.setTitle(this.Translations['login']['pageTitle'])
 
-    this.Subscription = this._AuthService.user$.subscribe((x: TokenResponse | null) => {
-      if (this._ActivatedRoute.snapshot.url[0].path === 'login') {
+    this.Subscription = this.authService.user$.subscribe((x: TokenResponse | null) => {
+      if (this.activatedRoute.snapshot.url[0].path === 'login') {
         const accessToken = localStorage.getItem('access_token');
         const refreshToken = localStorage.getItem('refresh_token');
         if (x && accessToken && refreshToken) {
-          const returnUrl = this._ActivatedRoute.snapshot.queryParams['returnUrl'] || '';
-          this._Router.navigate([returnUrl]);
+          const returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '';
+          this.router.navigate([returnUrl]);
         }
       }
     });
 
-    this.LoginForm = this._FormBuilder.group({
+    this.LoginForm = this.formBuilder.group({
       Email: [
         '',
         [
@@ -104,26 +120,26 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this._Loader.startLoader('loader-login');
+    this.loader.startLoader('loader-login');
 
-    const returnUrl = this._ActivatedRoute.snapshot.queryParams['returnUrl'] || '';
-    this._AuthService
+    const returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '';
+    this.authService
       .login(this.f['Email'].value, this.f['Password'].value, this.f['RememberMe'].value)
       .pipe(
         finalize(() => {
-          this._Loader.stopLoader('loader-login');
+          this.loader.stopLoader('loader-login');
           this.Submitted = false;
         })
       )
       .subscribe(
         (r: Result<TokenResponse>) => {
           if (r.succeeded) {
-            this._Router.navigate([returnUrl]);
+            this.router.navigate([returnUrl]);
           } else {
             this.ErrorsList = new Array<string>();
 
             r.messages.forEach((value: string) => {
-              this.ErrorsList.push(this.Translations[<any>value]);
+              this.ErrorsList.push(this.Translations[value]);
             });
 
             this.LoginError = true;

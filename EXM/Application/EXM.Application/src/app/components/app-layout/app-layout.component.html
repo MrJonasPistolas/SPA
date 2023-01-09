@@ -6,7 +6,7 @@
       <!-- Topbar Logo -->
       <div class="logo-topbar">
         <!-- Logo light -->
-        <a href="index.html" class="logo-light">
+        <a routerLink="/" class="logo-light">
           <span class="logo-lg">
             <img src="assets/images/logo.png" alt="logo" height="22">
           </span>
@@ -15,7 +15,7 @@
           </span>
         </a>
         <!-- Logo Dark -->
-        <a href="index.html" class="logo-dark">
+        <a routerLink="/" class="logo-dark">
           <span class="logo-lg">
             <img src="assets/images/logo.png" alt="dark logo" height="22">
           </span>
@@ -48,7 +48,7 @@
           </a>
 
           <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated topbar-dropdown-menu" *ngIf="availableLanguages.length > 1">
-            <a href="javascript:void(0);" class="dropdown-item notify-item"
+            <a href="javascript:void(0);" class="dropdown-item notify-item" (click)="changeLanguage(language.code)"
                *ngFor="let language of availableLanguages | callback: helperService.FilterNotSelectedLanguage">
               <img src="assets/images/flags/{{ language.code }}.png" alt="{{ language.title }}" class="me-1" height="12">
               <span class="align-middle">{{ language.title }}</span>
@@ -96,7 +96,7 @@
   <!-- ===================== Left Sidebar Start ===================== -->
   <div class="leftside-menu">
     <!-- Logo Light -->
-    <a href="index.html" class="logo logo-light">
+    <a routerLink="/" class="logo logo-light">
       <span class="logo-lg">
         <img src="assets/images/logo.png" alt="logo" height="22">
       </span>
@@ -105,7 +105,7 @@
       </span>
     </a>
     <!-- Logo Dark -->
-    <a href="index.html" class="logo logo-dark">
+    <a routerLink="/" class="logo logo-dark">
       <span class="logo-lg">
         <img src="assets/images/logo.png" alt="dark logo" height="22">
       </span>
@@ -121,7 +121,7 @@
     <div class="h-100" id="leftside-menu-container" data-simplebar>
       <!-- Leftbar User -->
       <div class="leftbar-user">
-        <a href="/profile">
+        <a routerLink="/profile">
           <img src="assets/images/user.png" *ngIf="user && !user.userPicture" alt="{{ user.name }}" height="42" class="rounded-circle shadow-sm">
           <img src="{{ user.userPicture }}" *ngIf="user && user.userPicture" alt="{{ user.name }}" height="42" class="rounded-circle shadow-sm">
           <span class="leftbar-user-name">{{ user?.name }}</span>
@@ -142,7 +142,7 @@
                 <a href="dashboard-analytics.html">Analytics</a>
               </li>
               <li>
-                <a href="index.html">Ecommerce</a>
+                <a routerLink="/">Ecommerce</a>
               </li>
               <li>
                 <a href="dashboard-projects.html">Projects</a>
@@ -337,17 +337,14 @@
           <div class="col-12">
             <div class="page-title-box">
               <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                  <li class="breadcrumb-item">
-                    <a href="javascript: void(0);">Hyper</a>
+                <ol class="breadcrumb m-0" *ngIf="breadcrumb.length > 0">
+                  <li class="breadcrumb-item" *ngFor="let bread of breadcrumb" [class.active]="bread.isActive">
+                    <span *ngIf="bread.href == ''">{{ bread.title }}</span>
+                    <a *ngIf="bread.href != ''" routerLink="{{ bread.href }}">{{ bread.title }}</a>
                   </li>
-                  <li class="breadcrumb-item">
-                    <a href="javascript: void(0);">Pages</a>
-                  </li>
-                  <li class="breadcrumb-item active">Starter</li>
                 </ol>
               </div>
-              <h4 class="page-title">Starter</h4>
+              <h4 class="page-title">{{ pageTitle }}</h4>
             </div>
           </div>
         </div>
