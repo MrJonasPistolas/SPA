@@ -74,7 +74,9 @@
     "table": {
       "fields": {
         "id": "Identificador",
-        "name": "Nome"
+        "name": "Nome",
+        "edit": "Editar",
+        "delete": "Eliminar"
       },
       "buttons": {
         "add": "Adicionar",
@@ -88,6 +90,16 @@
       "incomeCategories": "Categorieas - Rendimentos"
     },
     "pageTitle": "EXM | Categorias - Rendimentos",
-    "title": "Categorias - Rendimentos"
+    "title": "Categorias - Rendimentos",
+    "inputs": {
+      "name": "Nome"
+    },
+    "errors": {
+      "name": {
+        "required": "Por favor insira um nome",
+        "maxLength": "O nome não deve exceder 40 caracteres.",
+        "minLength": "O nome deve ter pelo menos 4 caracteres."
+      }
+    }
   }
 }

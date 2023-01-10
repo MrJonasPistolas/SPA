@@ -14,16 +14,17 @@
     <div class="modal-content">
       <div class="modal-body p-2">
         <form [formGroup]="form" (ngSubmit)="onSubmit()" class="needs-validation">
+          <input formControlName="Id" type="hidden" id="income-categories-id" />
           <div class="mb-2">
-            <label for="income-categories-name" class="form-label">{{ 'login.inputs.email' | translate }}</label>
-            <input formControlName="Name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['Name'].errors }" type="email" id="income-categories-name" required="" placeholder="{{ 'login.inputs.email' | translate }}">
+            <label for="income-categories-name" class="form-label">{{ 'incomeCategories.inputs.name' | translate }}</label>
+            <input formControlName="Name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['Name'].errors }" type="text" id="income-categories-name" required="" placeholder="{{ 'incomeCategories.inputs.name' | translate }}">
             <div *ngIf="submitted && f['Name'].errors" class="invalid-feedback">
-              <div *ngIf="f['Name'].errors['required']">{{ 'login.errors.password.required' | translate }}</div>
-              <div *ngIf="f['Name'].errors['minLength']">{{ 'login.errors.password.minLength' | translate }}</div>
-              <div *ngIf="f['Name'].errors['maxLength']">{{ 'login.errors.password.maxLength' | translate }}</div>
+              <div *ngIf="f['Name'].errors['required']">{{ 'incomeCategories.errors.name.required' | translate }}</div>
+              <div *ngIf="f['Name'].errors['minlength']">{{ 'incomeCategories.errors.name.minLength' | translate }}</div>
+              <div *ngIf="f['Name'].errors['maxlength']">{{ 'incomeCategories.errors.name.maxLength' | translate }}</div>
             </div>
           </div>
-          <div class="p-0 modal-footer">
+          <div class="p-0 modal-footer border-top-0">
             <button class="btn btn-success btn-sm" type="submit">{{ 'layout.modals.logout.buttons.confirm' | translate }}</button>
             &nbsp;
             <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">{{ 'layout.modals.logout.buttons.cancel' | translate }}</button>
@@ -33,3 +34,4 @@
     </div>
   </div>
 </div>
+<ngx-ui-loader [loaderId]="'loader-income-categories'"></ngx-ui-loader>

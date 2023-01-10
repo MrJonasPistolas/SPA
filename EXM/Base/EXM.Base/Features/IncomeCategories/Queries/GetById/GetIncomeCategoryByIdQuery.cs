@@ -9,6 +9,11 @@ namespace EXM.Base.Features.IncomeCategories.Queries.GetById
     public class GetIncomeCategoryByIdQuery : IRequest<Result<GetIncomeCategoryByIdResponse>>
     {
         public int Id { get; set; }
+
+        public GetIncomeCategoryByIdQuery(int id)
+        {
+            Id = id;
+        }
     }
 
     internal class GetIncomeCategoryByIdQueryHandler : IRequestHandler<GetIncomeCategoryByIdQuery, Result<GetIncomeCategoryByIdResponse>>

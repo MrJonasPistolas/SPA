@@ -1,6 +1,9 @@
 import {
+  AfterViewInit,
   Component,
-  OnInit
+  OnDestroy,
+  OnInit,
+  ViewChild
 } from "@angular/core";
 import {
   FormBuilder,
@@ -9,16 +12,23 @@ import {
   Validators
 } from "@angular/forms";
 import { Title } from "@angular/platform-browser";
+import { DataTableDirective } from "angular-datatables";
+
+import { NgxUiLoaderService } from "ngx-ui-loader";
+import { finalize, Subject } from "rxjs";
 
 import { EmitActionsConstants } from "../../constants";
 import { MainLayoutEmit } from "../../emits";
 import {
+  IncomeCategoryRequest,
   IncomeCategoryViewer,
-  PagedResultsResponse
+  PagedResultsResponse,
+  ResultResponse
 } from "../../models";
 import { RootScope } from "../../scopes";
 import { IncomeCategoriesService } from "../../services";
 
+declare var $: any;
 declare var bootstrap: any;
 
 @Component({
@@ -26,9 +36,12 @@ declare var bootstrap: any;
   templateUrl: './income-categories.component.html',
   styleUrls: ['./income-categories.component.css']
 })
-export class IncomeCategoriesComponent implements OnInit {
+export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnInit {
+  @ViewChild(DataTableDirective, { static: false }) dtElement: DataTableDirective | undefined;
 
   dtOptions: any = {};
+  dtTrigger: any = new Subject();
+  //dtOptions: DataTables.Settings = {};
   language = '';
   translations: any = {};
   form: FormGroup = new FormGroup({
@@ -45,7 +58,8 @@ export class IncomeCategoriesComponent implements OnInit {
     private mainLayoutEmit: MainLayoutEmit,
     private rootScope: RootScope,
     private incomeCategoriesService: IncomeCategoriesService,
-    private titleService: Title
+    private titleService: Title,
+    private loader: NgxUiLoaderService
   ) {
     this.translations = this.rootScope.GetTranslations();
     this.titleService.setTitle(this.translations.incomeCategories.pageTitle);
@@ -110,16 +124,60 @@ export class IncomeCategoriesComponent implements OnInit {
         {
           title: this.translations.incomeCategories.table.fields.name,
           data: 'name'
+        },
+        {
+          title: this.translations.incomeCategories.table.fields.edit,
+          render: (data: any, type: any, full: any) => {
+            return `<button type="button" class="btn btn-warning btn-sm income-categories-edit" title="${this.translations.incomeCategories.table.fields.edit} - ${full.name}" data-id="${full.id}"><i class="mdi mdi-file-edit"></i> </button>`;
+          }
+        },
+        {
+          title: this.translations.incomeCategories.table.fields.delete,
+          render: (data: any, type: any, full: any) => {
+            return `<button type="button" class="btn btn-danger btn-sm income-categories-delete" title="${this.translations.incomeCategories.table.fields.delete} - ${full.name}" data-id="${full.id}"><i class="mdi mdi-delete"></i> </button>`;
+          }
         }
       ],
+      initComplete: (settings: any, json: object) => {
+        $('.income-categories-edit').click((event: PointerEvent) => {
+          var element: any = event.currentTarget;
+          var value: string = element.attributes['data-id'].value;
+
+          this.incomeCategoriesService.getById(value).subscribe((resp: ResultResponse<IncomeCategoryViewer>) => {
+            if (resp.succeeded) {
+              this.form = this.formBuilder.group({
+                Id: [resp.data.id],
+                Name: [
+                  resp.data.name,
+                  [
+                    Validators.required,
+                    Validators.minLength(4),
+                    Validators.maxLength(40)
+                  ]
+                ]
+              });
+
+              this.modal.show();
+            }
+          });
+
+        });
+
+        $('.income-categories-delete').click((event: PointerEvent) => {
+          var element: any = event.currentTarget;
+          var value: string = element.attributes['data-id'].value;
+        });
+      },
       dom: 'Bfrtip',
       buttons: [
         {
           className: 'btn btn-primary',
           text: this.translations.incomeCategories.table.buttons.add,
           key: '1',
-          action: (e: any, dt: any, node: any, config: any) => {
+          action: () => {
+            this.submitted = false;
             this.form = this.formBuilder.group({
+              Id: ['0'],
               Name: [
                 '',
                 [
@@ -145,6 +203,25 @@ export class IncomeCategoriesComponent implements OnInit {
     );
   }
 
+  ngAfterViewInit(): void {
+    this.dtTrigger.next();
+  }
+
+  ngOnDestroy(): void {
+    // Do not forget to unsubscribe the event
+    this.dtTrigger.unsubscribe();
+  }
+
+  rerender(): void {
+    if (this.dtElement)
+      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+        // Destroy the table first
+        dtInstance.destroy();
+        // Call the dtTrigger to rerender again
+        this.dtTrigger.next();
+      });
+  }
+
   get f() {
     return this.form?.controls;
   }
@@ -157,34 +234,18 @@ export class IncomeCategoriesComponent implements OnInit {
       return;
     }
 
-    //this.loader.startLoader('loader-login');
+    let request: IncomeCategoryRequest = {
+      id: +this.f['Id'].value,
+      name: this.f['Name'].value
+    };
 
-    //const returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '';
-    //this.authService
-    //  .login(this.f['Email'].value, this.f['Password'].value, this.f['RememberMe'].value)
-    //  .pipe(
-    //    finalize(() => {
-    //      this.loader.stopLoader('loader-login');
-    //      this.Submitted = false;
-    //    })
-    //  )
-    //  .subscribe(
-    //    (r: Result<TokenResponse>) => {
-    //      if (r.succeeded) {
-    //        this.router.navigate([returnUrl]);
-    //      } else {
-    //        this.ErrorsList = new Array<string>();
+    this.loader.startLoader('loader-income-categories');
 
-    //        r.messages.forEach((value: string) => {
-    //          this.ErrorsList.push(this.Translations[value]);
-    //        });
-
-    //        this.LoginError = true;
-    //      }
-    //    },
-    //    (error: any) => {
-    //      this.LoginError = error;
-    //    }
-    //  );
+    this.incomeCategoriesService.upsert(request).subscribe((result: ResultResponse<number>) => {
+      this.modal.hide();
+      this.loader.stopLoader('loader-income-categories');
+      this.submitted = false;
+      this.rerender();
+    });
   }
 }
