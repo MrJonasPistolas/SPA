@@ -12,17 +12,16 @@ import {
   Validators
 } from "@angular/forms";
 import { Title } from "@angular/platform-browser";
-import { DataTableDirective } from "angular-datatables";
+import { Subject } from "rxjs";
 
+import { DataTableDirective } from "angular-datatables";
 import { NgxUiLoaderService } from "ngx-ui-loader";
-import { finalize, Subject } from "rxjs";
 
 import { EmitActionsConstants } from "../../constants";
 import { MainLayoutEmit } from "../../emits";
 import {
   IncomeCategoryRequest,
   IncomeCategoryViewer,
-  PagedResultsResponse,
   ResultResponse
 } from "../../models";
 import { RootScope } from "../../scopes";
@@ -45,6 +44,7 @@ export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnIn
   language = '';
   translations: any = {};
   form: FormGroup = new FormGroup({
+    Id: new FormControl('0'),
     Name: new FormControl('')
   });
   modal: any;
@@ -100,19 +100,19 @@ export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnIn
       },
       processing: true,
       serverSide: true,
-      pageLength: 10,
+      pageLength: 8,
       lengthChange: false,
       paging: true,
       ajax: (dataTablesParameters: any, callback: any) => {
         const page = parseInt(dataTablesParameters.start) / parseInt(dataTablesParameters.length) + 1;
-        this.incomeCategoriesService.getAll(page, dataTablesParameters.length, dataTablesParameters.search.value).subscribe((resp: PagedResultsResponse<IncomeCategoryViewer>) => {
-          if (resp.succeeded) {
-            callback({
-              recordsTotal: resp.totalCount,
-              recordsFiltered: resp.totalCount,
-              data: resp.data
-            });
-          }
+        dataTablesParameters.columns.pop();
+        dataTablesParameters.columns.pop();
+        this.incomeCategoriesService.getPaged(dataTablesParameters).subscribe((resp) => {
+          callback({
+            recordsTotal: resp.recordsTotal,
+            recordsFiltered: resp.recordsFiltered,
+            data: resp.data
+          });
         });
       },
       columns: [
@@ -129,13 +129,15 @@ export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnIn
           title: this.translations.incomeCategories.table.fields.edit,
           render: (data: any, type: any, full: any) => {
             return `<button type="button" class="btn btn-warning btn-sm income-categories-edit" title="${this.translations.incomeCategories.table.fields.edit} - ${full.name}" data-id="${full.id}"><i class="mdi mdi-file-edit"></i> </button>`;
-          }
+          },
+          data: null
         },
         {
           title: this.translations.incomeCategories.table.fields.delete,
           render: (data: any, type: any, full: any) => {
             return `<button type="button" class="btn btn-danger btn-sm income-categories-delete" title="${this.translations.incomeCategories.table.fields.delete} - ${full.name}" data-id="${full.id}"><i class="mdi mdi-delete"></i> </button>`;
-          }
+          },
+          data: null
         }
       ],
       initComplete: (settings: any, json: object) => {
@@ -241,7 +243,7 @@ export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnIn
 
     this.loader.startLoader('loader-income-categories');
 
-    this.incomeCategoriesService.upsert(request).subscribe((result: ResultResponse<number>) => {
+    this.incomeCategoriesService.upsert(request).subscribe((result: ResultResponse<IncomeCategoryViewer>) => {
       this.modal.hide();
       this.loader.stopLoader('loader-income-categories');
       this.submitted = false;

@@ -1,28 +1,9 @@
 ﻿using EXM.Application.WebAPI.Localization;
 using EXM.Application.WebAPI.Managers.Preferences;
-using EXM.Application.WebAPI.Permission;
-using EXM.Application.WebAPI.Services;
 using EXM.Application.WebAPI.Settings;
-using EXM.Base.Configurations;
-using EXM.Base.Interfaces.Serialization.Options;
-using EXM.Base.Interfaces.Serialization.Serializers;
-using EXM.Base.Interfaces.Serialization.Settings;
-using EXM.Base.Interfaces.Services;
-using EXM.Base.Interfaces.Services.Account;
-using EXM.Base.Interfaces.Services.Identity;
-using EXM.Base.Serialization.JsonConverters;
-using EXM.Base.Serialization.Options;
-using EXM.Base.Serialization.Serializers;
-using EXM.Base.Serialization.Settings;
 using EXM.Common.Constants.Localization;
 using EXM.Common.Constants.Permission;
 using EXM.Common.Wrapper;
-using EXM.Infrastructure;
-using EXM.Infrastructure.Contexts;
-using EXM.Infrastructure.Models.Identity;
-using EXM.Infrastructure.Services;
-using EXM.Infrastructure.Services.Identity;
-using EXM.Infrastructure.Shared.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -76,14 +57,14 @@ namespace EXM.Application.WebAPI.Extensions
             return services;
         }
 
-        internal static AppConfiguration GetApplicationSettings(
-           this IServiceCollection services,
-           IConfiguration configuration)
-        {
-            var applicationSettingsConfiguration = configuration.GetSection(nameof(AppConfiguration));
-            services.Configure<AppConfiguration>(applicationSettingsConfiguration);
-            return applicationSettingsConfiguration.Get<AppConfiguration>();
-        }
+        //internal static AppConfiguration GetApplicationSettings(
+        //   this IServiceCollection services,
+        //   IConfiguration configuration)
+        //{
+        //    var applicationSettingsConfiguration = configuration.GetSection(nameof(AppConfiguration));
+        //    services.Configure<AppConfiguration>(applicationSettingsConfiguration);
+        //    return applicationSettingsConfiguration.Get<AppConfiguration>();
+        //}
 
         internal static void RegisterSwagger(this IServiceCollection services)
         {
@@ -199,26 +180,26 @@ namespace EXM.Application.WebAPI.Extensions
             return services;
         }
 
-        internal static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddTransient<IDateTimeService, SystemDateTimeService>();
-            services.Configure<MailConfiguration>(configuration.GetSection("MailConfiguration"));
-            services.AddTransient<IMailService, SMTPMailService>();
-            return services;
-        }
+        //internal static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        //{
+        //    services.AddTransient<IDateTimeService, SystemDateTimeService>();
+        //    services.Configure<MailConfiguration>(configuration.GetSection("MailConfiguration"));
+        //    services.AddTransient<IMailService, SMTPMailService>();
+        //    return services;
+        //}
 
-        internal static IServiceCollection AddApplicationServices(this IServiceCollection services)
-        {
-            services.AddTransient<IRoleClaimService, RoleClaimService>();
-            services.AddTransient<ITokenService, IdentityService>();
-            services.AddTransient<IRoleService, RoleService>();
-            services.AddTransient<IAccountService, AccountService>();
-            services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IUploadService, UploadService>();
-            services.AddTransient<IAuditService, AuditService>();
-            services.AddScoped<IExcelService, ExcelService>();
-            return services;
-        }
+        //internal static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        //{
+        //    services.AddTransient<IRoleClaimService, RoleClaimService>();
+        //    services.AddTransient<ITokenService, IdentityService>();
+        //    services.AddTransient<IRoleService, RoleService>();
+        //    services.AddTransient<IAccountService, AccountService>();
+        //    services.AddTransient<IUserService, UserService>();
+        //    services.AddTransient<IUploadService, UploadService>();
+        //    services.AddTransient<IAuditService, AuditService>();
+        //    services.AddScoped<IExcelService, ExcelService>();
+        //    return services;
+        //}
 
         internal static IServiceCollection AddJwtAuthentication(
             this IServiceCollection services, AppConfiguration config)

@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 
 import { environment } from "../../environments/environment";
-import { QueryHelper } from "../helpers";
+import { QueryHelper, ToolsHelper } from "../helpers";
 import { IQueryString } from "../interfaces";
 import {
   IncomeCategoryRequest,
@@ -24,31 +24,9 @@ export class IncomeCategoriesService {
     private http: HttpClient
   ) { }
 
-  getAll(pageNumber: number, pageSize: number, searchString: string): Observable<PagedResultsResponse<IncomeCategoryViewer>> {
-    let url = `${this.apiUrl}/api/v1/IncomeCategories?`;
-    let queryStrings: Array<IQueryString> = [];
-
-    queryStrings.push(
-      {
-        key: 'pageNumber',
-        value: pageNumber.toString()
-      },
-      {
-        key: 'pageSize',
-        value: pageSize.toString()
-      }
-    );
-
-    if (searchString) {
-      queryStrings.push({
-        key: 'searchString',
-        value: searchString
-      });
-    }
-
-    url = QueryHelper.AddQueryStrings(url, queryStrings);
-
-    return this.http.get<PagedResultsResponse<IncomeCategoryViewer>>(url);
+  getPaged(params: any): Observable<any> {
+    let url = `${this.apiUrl}/api/v1/IncomeCategories/Paged`;
+    return this.http.post(url, params);
   }
 
   getById(id: string): Observable<ResultResponse<IncomeCategoryViewer>> {
@@ -57,9 +35,12 @@ export class IncomeCategoriesService {
     return this.http.get<ResultResponse<IncomeCategoryViewer>>(url);
   }
 
-  upsert(request: IncomeCategoryRequest): Observable<ResultResponse<number>> {
+  upsert(request: IncomeCategoryRequest): Observable<ResultResponse<IncomeCategoryViewer>> {
     let url = `${this.apiUrl}/api/v1/IncomeCategories`;
 
-    return this.http.post<ResultResponse<number>>(url, request);
+    if (request.id == 0)
+      return this.http.post<ResultResponse<IncomeCategoryViewer>>(url, request);
+    else
+      return this.http.put<ResultResponse<IncomeCategoryViewer>>(url, request);
   }
 }

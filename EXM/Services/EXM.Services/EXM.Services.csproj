@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EPPlus" Version="6.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\EXM.Common.Entities\EXM.Common.Entities.csproj" />
+    <ProjectReference Include="..\..\Common\EXM.Common.Models\EXM.Common.Models.csproj" />
+    <ProjectReference Include="..\..\Common\EXM.Common\EXM.Common.csproj" />
+    <ProjectReference Include="..\..\Data\EXM.Data.Domain\EXM.Data.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

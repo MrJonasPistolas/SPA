@@ -47,17 +47,17 @@ namespace EXM.Application.WebAPI
             services.AddCurrentUserService();
             services.AddSerialization();
             services.AddDatabase(Configuration);
-            services.AddServerStorage(); //TODO - should implement ServerStorageProvider to work correctly!
+            //services.AddServerStorage(); //TODO - should implement ServerStorageProvider to work correctly!
             services.AddScoped<ServerPreferenceManager>();
             services.AddServerLocalization();
             services.AddIdentity();
             services.AddJwtAuthentication(services.GetApplicationSettings(Configuration));
-            services.AddApplicationLayer();
+            //services.AddApplicationLayer();
             services.AddApplicationServices();
-            services.AddRepositories();
+            //services.AddRepositories();
             services.AddSharedInfrastructure(Configuration);
             services.RegisterSwagger();
-            services.AddInfrastructureMappings();
+            //services.AddInfrastructureMappings();
             services.AddControllers();
             services.AddRazorPages();
             services.AddApiVersioning(config =>

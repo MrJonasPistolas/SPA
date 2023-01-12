@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   tokenName: 'token',
   issuer: 'http://www.lisboncg.com',
-  serverUrl: 'https://localhost:7170',
+  serverUrl: 'https://localhost:7222',
   languageSupport: [ 'en', 'pt' ]
 };
 
