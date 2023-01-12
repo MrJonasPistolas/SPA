@@ -1,0 +1,37 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped" style="width:100%"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modal-income-categories" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body p-2">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="needs-validation">
+          <input formControlName="Id" type="hidden" id="income-categories-id" />
+          <div class="mb-2">
+            <label for="income-categories-name" class="form-label">{{ 'incomeCategories.inputs.name' | translate }}</label>
+            <input formControlName="Name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['Name'].errors }" type="text" id="income-categories-name" required="" placeholder="{{ 'incomeCategories.inputs.name' | translate }}">
+            <div *ngIf="submitted && f['Name'].errors" class="invalid-feedback">
+              <div *ngIf="f['Name'].errors['required']">{{ 'incomeCategories.errors.name.required' | translate }}</div>
+              <div *ngIf="f['Name'].errors['minlength']">{{ 'incomeCategories.errors.name.minLength' | translate }}</div>
+              <div *ngIf="f['Name'].errors['maxlength']">{{ 'incomeCategories.errors.name.maxLength' | translate }}</div>
+            </div>
+          </div>
+          <div class="p-0 modal-footer border-top-0">
+            <button class="btn btn-success btn-sm" type="submit">{{ 'layout.modals.logout.buttons.confirm' | translate }}</button>
+            &nbsp;
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">{{ 'layout.modals.logout.buttons.cancel' | translate }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-ui-loader [loaderId]="'loader-income-categories'"></ngx-ui-loader>

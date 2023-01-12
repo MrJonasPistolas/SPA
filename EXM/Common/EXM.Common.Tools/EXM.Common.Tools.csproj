@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EXM.Common.Entities\EXM.Common.Entities.csproj" />
+    <ProjectReference Include="..\EXM.Common.Models\EXM.Common.Models.csproj" />
+    <ProjectReference Include="..\EXM.Common\EXM.Common.csproj" />
+  </ItemGroup>
+
+</Project>
