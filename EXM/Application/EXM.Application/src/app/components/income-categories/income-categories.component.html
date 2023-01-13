@@ -15,7 +15,7 @@
       <div class="modal-body p-2">
         <form [formGroup]="form" (ngSubmit)="onSubmit()" class="needs-validation">
           <input formControlName="Id" type="hidden" id="income-categories-id" />
-          <div class="mb-2">
+          <div class="mb-2" *ngIf="upsertMode">
             <label for="income-categories-name" class="form-label">{{ 'incomeCategories.inputs.name' | translate }}</label>
             <input formControlName="Name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['Name'].errors }" type="text" id="income-categories-name" required="" placeholder="{{ 'incomeCategories.inputs.name' | translate }}">
             <div *ngIf="submitted && f['Name'].errors" class="invalid-feedback">
@@ -23,6 +23,9 @@
               <div *ngIf="f['Name'].errors['minlength']">{{ 'incomeCategories.errors.name.minLength' | translate }}</div>
               <div *ngIf="f['Name'].errors['maxlength']">{{ 'incomeCategories.errors.name.maxLength' | translate }}</div>
             </div>
+          </div>
+          <div class="mb-2" *ngIf="deleteMode">
+            <p class="m-0">{{ 'incomeCategories.texts.deleteMessage' | translate }}</p>
           </div>
           <div class="p-0 modal-footer border-top-0">
             <button class="btn btn-success btn-sm" type="submit">{{ 'layout.modals.logout.buttons.confirm' | translate }}</button>
@@ -34,4 +37,5 @@
     </div>
   </div>
 </div>
+
 <ngx-ui-loader [loaderId]="'loader-income-categories'"></ngx-ui-loader>

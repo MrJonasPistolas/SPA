@@ -100,6 +100,9 @@
         "maxLength": "O nome não deve exceder 40 caracteres.",
         "minLength": "O nome deve ter pelo menos 4 caracteres."
       }
+    },
+    "texts": {
+      "deleteMessage": "Deseja eliminar esta Categoria de Rendimento?"
     }
   }
 }

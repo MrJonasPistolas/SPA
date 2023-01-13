@@ -43,4 +43,10 @@ export class IncomeCategoriesService {
     else
       return this.http.put<ResultResponse<IncomeCategoryViewer>>(url, request);
   }
+
+  delete(id: string): Observable<ResultResponse<boolean>> {
+    let url = `${this.apiUrl}/api/v1/IncomeCategories/${id}`;
+
+    return this.http.delete<ResultResponse<boolean>>(url);
+  }
 }
