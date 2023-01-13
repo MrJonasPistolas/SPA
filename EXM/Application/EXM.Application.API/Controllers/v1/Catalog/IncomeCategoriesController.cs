@@ -48,7 +48,7 @@ namespace EXM.Application.API.Controllers.v1.Catalog
 
         [Authorize(Policy = Permissions.IncomeCategories.View)]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
             return Ok(await _incomeCategoryService.GetByIdAsync(id));
         }
@@ -67,6 +67,13 @@ namespace EXM.Application.API.Controllers.v1.Catalog
         {
             var result = await _incomeCategoryService.AddEditAsync(request);
             return Ok(result);
+        }
+
+        [Authorize(Policy = Permissions.IncomeCategories.Delete)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            return Ok(await _incomeCategoryService.DeleteAsync(id));
         }
         #endregion
     }

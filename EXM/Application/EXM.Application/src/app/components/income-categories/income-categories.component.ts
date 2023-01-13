@@ -51,6 +51,8 @@ export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnIn
   loading: boolean = false;
   submitted: boolean = false;
   formError: boolean = false;
+  upsertMode: boolean = false;
+  deleteMode: boolean = false;
 
   // Constructor
   constructor(
@@ -147,6 +149,9 @@ export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnIn
 
           this.incomeCategoriesService.getById(value).subscribe((resp: ResultResponse<IncomeCategoryViewer>) => {
             if (resp.succeeded) {
+              this.upsertMode = true;
+              this.deleteMode = false;
+
               this.form = this.formBuilder.group({
                 Id: [resp.data.id],
                 Name: [
@@ -168,6 +173,16 @@ export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnIn
         $('.income-categories-delete').click((event: PointerEvent) => {
           var element: any = event.currentTarget;
           var value: string = element.attributes['data-id'].value;
+
+          this.upsertMode = false;
+          this.deleteMode = true;
+
+          this.form = this.formBuilder.group({
+            Id: [value],
+            Name: ['']
+          });
+
+          this.modal.show();
         });
       },
       dom: 'Bfrtip',
@@ -178,6 +193,8 @@ export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnIn
           key: '1',
           action: () => {
             this.submitted = false;
+            this.upsertMode = true;
+            this.deleteMode = false;
             this.form = this.formBuilder.group({
               Id: ['0'],
               Name: [
@@ -217,9 +234,7 @@ export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnIn
   rerender(): void {
     if (this.dtElement)
       this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-        // Destroy the table first
         dtInstance.destroy();
-        // Call the dtTrigger to rerender again
         this.dtTrigger.next();
       });
   }
@@ -232,22 +247,38 @@ export class IncomeCategoriesComponent implements AfterViewInit, OnDestroy, OnIn
     this.formError = false;
     this.submitted = true;
 
-    if (this.form.invalid) {
-      return;
+    if (this.upsertMode) {
+      if (this.form.invalid) {
+        return;
+      }
+
+      let request: IncomeCategoryRequest = {
+        id: +this.f['Id'].value,
+        name: this.f['Name'].value
+      };
+
+      this.loader.startLoader('loader-income-categories');
+
+      this.incomeCategoriesService.upsert(request).subscribe((result: ResultResponse<IncomeCategoryViewer>) => {
+        this.modal.hide();
+        this.loader.stopLoader('loader-income-categories');
+        this.submitted = false;
+        this.rerender();
+      });
     }
 
-    let request: IncomeCategoryRequest = {
-      id: +this.f['Id'].value,
-      name: this.f['Name'].value
-    };
+    if (this.deleteMode) {
+      var id = this.f['Id'].value;
 
-    this.loader.startLoader('loader-income-categories');
+      this.loader.startLoader('loader-income-categories');
 
-    this.incomeCategoriesService.upsert(request).subscribe((result: ResultResponse<IncomeCategoryViewer>) => {
-      this.modal.hide();
-      this.loader.stopLoader('loader-income-categories');
-      this.submitted = false;
-      this.rerender();
-    });
+      this.incomeCategoriesService.delete(id).subscribe((result: ResultResponse<boolean>) => {
+        this.modal.hide();
+        this.loader.stopLoader('loader-income-categories');
+        this.submitted = false;
+        this.rerender();
+      });
+    }
+    
   }
 }
